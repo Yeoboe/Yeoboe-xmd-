@@ -56,7 +56,7 @@ router.get('/', async (req, res) => {
                         const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`);
                         await delay(8000);
                         const b64data = Buffer.from(data).toString('base64');
-                        const session = await client.sendMessage(client.user.id, { text: 'Ultra-X:~' + b64data });
+                        const session = await client.sendMessage(client.user.id, { text: 'Yeoboe-xmd:~' + b64data });
                         await client.sendMessage(client.user.id, {
                             text: "```⚡ Yeoboe xmd  has been linked to your WhatsApp account!\n\nDo NOT share this session_id with anyone.\n\nCopy and paste it on the SESSION string during deploy — it will be used for authentication.\n\nFor any issues, reach us via:\nhttps://wa.me/message/255742579250\n\nDon't forget to sleep 😴, for even the relentless must recharge ⚡.\n\nGoodluck 🎉 — Yeoboe xmd```"
                         }, { quoted: session });
