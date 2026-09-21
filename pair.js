@@ -1,5 +1,4 @@
 const { makeid } = require('./id');
-const QRCode = require('qrcode');
 const express = require('express');
 const fs = require('fs');
 const pino = require('pino');
@@ -13,15 +12,16 @@ const {
     DisconnectReason,
 } = require("@whiskeysockets/baileys");
 
-let router = express.Router();
+const router = express.Router();
 
-function removeFile(FilePath) {
-    if (!fs.existsSync(FilePath)) return false;
-    fs.rmSync(FilePath, { recursive: true, force: true });
+function removeFile(filePath) {
+    if (!fs.existsSync(filePath)) return false;
+    fs.rmSync(filePath, { recursive: true, force: true });
 }
 
 router.get('/', async (req, res) => {
     const id = makeid();
+    let num = req.query.number;
 
     async function JUNEX() {
         const { state, saveCreds } = await useMultiFileAuthState('./temp/' + id);
@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
             const { version } = await fetchLatestBaileysVersion();
             const logger = pino({ level: 'silent' });
 
-            let client = makeWASocket({
+            const client = makeWASocket({
                 version,
                 auth: {
                     creds: state.creds,
@@ -45,24 +45,20 @@ router.get('/', async (req, res) => {
             client.ev.on('creds.update', saveCreds);
 
             client.ev.on('connection.update', async (s) => {
-                const { connection, lastDisconnect, qr } = s;
-
-                if (qr && !res.headersSent) {
-                    await res.end(await QRCode.toBuffer(qr));
-                }
+                const { connection, lastDisconnect } = s;
 
                 if (connection === 'open') {
                     try {
                         await client.sendMessage(client.user.id, {
-                            text: '⚡ *Yeoboe xmd* ⚡\nGenerating your session, please wait a moment...'
+                            text: '⚡ *JuneX Ultra* ⚡\nGenerating your session, please wait a moment...'
                         });
                         await delay(50000);
-                        let data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`);
+                        const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`);
                         await delay(8000);
-                        let b64data = Buffer.from(data).toString('base64');
-                        let session = await client.sendMessage(client.user.id, { text: 'Ultra-X:~' + b64data });
+                        const b64data = Buffer.from(data).toString('base64');
+                        const session = await client.sendMessage(client.user.id, { text: 'Ultra-X:~' + b64data });
                         await client.sendMessage(client.user.id, {
-                            text: "```⚡ Yeoboe xmd  Ultra has been linked to your WhatsApp account!\n\nDo NOT share this session_id with anyone.\n\nCopy and paste it on the SESSION string during deploy — it will be used for authentication.\n\nFor any issues, reach us via:\nhttps://wa.me/message/YNDA2RFTE35LB1\n\nDon't forget to sleep 😴, for even the relentless must recharge ⚡.\n\nGoodluck 🎉 — Yeoboe xmd```"
+                            text: "```⚡ Yeoboe xmd  has been linked to your WhatsApp account!\n\nDo NOT share this session_id with anyone.\n\nCopy and paste it on the SESSION string during deploy — it will be used for authentication.\n\nFor any issues, reach us via:\nhttps://wa.me/message/255742579250\n\nDon't forget to sleep 😴, for even the relentless must recharge ⚡.\n\nGoodluck 🎉 — Yeoboe xmd```"
                         }, { quoted: session });
                         await delay(500);
                         await client.ws.close();
@@ -79,16 +75,25 @@ router.get('/', async (req, res) => {
                 }
             });
 
-        } catch (err) {
-            console.log('QR service error:', err);
-            if (!res.headersSent) {
-                await res.json({ code: 'Service is Currently Unavailable' });
+            if (!client.authState.creds.registered) {
+                await delay(1500);
+                num = num.replace(/[^0-9]/g, '');
+                const code = await client.requestPairingCode(num);
+                if (!res.headersSent) {
+                    await res.send({ code });
+                }
             }
+
+        } catch (err) {
+            console.log('Pair service error:', err);
             removeFile('./temp/' + id);
+            if (!res.headersSent) {
+                await res.send({ code: 'Service Currently Unavailable' });
+            }
         }
     }
 
-    return await JUNEX();
+    await JUNEX();
 });
 
 module.exports = router;

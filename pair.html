@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JuneX Ultra Session</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px 0 80px;
+      background: #06040f;
+      font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("https://i.ibb.co/G41y121t/840eec9315e0.jpg");
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+      opacity: 0.25;
+      animation: bgZoom 20s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 30%, rgba(26, 111, 212, 0.1) 0%, transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(90, 143, 255, 0.1) 0%, transparent 60%);
+      z-index: 0;
+      animation: bgGradient 10s ease-in-out infinite;
+    }
+
+    @keyframes bgZoom {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    @keyframes bgGradient {
+      0%, 100% {
+        background: radial-gradient(circle at 30% 30%, rgba(26, 111, 212, 0.1) 0%, transparent 60%),
+                    radial-gradient(circle at 70% 70%, rgba(90, 143, 255, 0.1) 0%, transparent 60%);
+      }
+      50% {
+        background: radial-gradient(circle at 70% 30%, rgba(26, 111, 212, 0.15) 0%, transparent 60%),
+                    radial-gradient(circle at 30% 70%, rgba(90, 143, 255, 0.15) 0%, transparent 60%);
+      }
+    }
+
+    /* Floating Particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 1.5px;
+      height: 1.5px;
+      background: rgba(26, 111, 212, 0.6);
+      border-radius: 50%;
+      animation: floatParticle 25s infinite ease-in-out;
+    }
+
+    @keyframes floatParticle {
+      0% {
+        opacity: 0;
+        transform: translateY(100vh) translateX(0);
+      }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% {
+        opacity: 0;
+        transform: translateY(-100vh) translateX(150px);
+      }
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+    }
+
+    .main {
+      position: relative;
+      z-index: 15;
+    }
+
+    .box {
+      width: 420px;
+      padding: 45px 35px;
+      text-align: center;
+      background: rgba(0, 10, 30, 0.93);
+      border-radius: 22px;
+      border: 2px solid rgba(26, 111, 212, 0.6);
+      box-shadow: 
+        0 0 40px rgba(26, 111, 212, 0.6),
+        0 0 80px rgba(26, 111, 212, 0.3),
+        inset 0 0 50px rgba(26, 111, 212, 0.08);
+      animation: cardGlow 3.5s ease-in-out infinite, floatUp 4s ease-in-out infinite;
+      backdrop-filter: blur(15px);
+      transform-origin: center;
+    }
+
+    @keyframes cardGlow {
+      0%, 100% {
+        box-shadow: 
+          0 0 40px rgba(26, 111, 212, 0.6),
+          0 0 80px rgba(26, 111, 212, 0.3),
+          inset 0 0 50px rgba(26, 111, 212, 0.08);
+      }
+      50% {
+        box-shadow: 
+          0 0 60px rgba(26, 111, 212, 0.8),
+          0 0 100px rgba(26, 111, 212, 0.5),
+          inset 0 0 60px rgba(26, 111, 212, 0.12);
+      }
+    }
+
+    @keyframes floatUp {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    #text { color: #f6f5f5; }
+
+    .centered-text {
+      color: #e9e4e4;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 12px 0 8px;
+    }
+
+    .box i {
+      font-size: 40px;
+      color: #5a8fff;
+      margin-bottom: 10px;
+      display: block;
+      animation: iconBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes iconBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .input-container {
+      display: flex;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 12px;
+      padding: 6px;
+      gap: 6px;
+      max-width: 340px;
+      width: 100%;
+      margin-top: 18px;
+      border: 1px solid rgba(26, 111, 212, 0.3);
+      box-shadow: inset 0 0 15px rgba(26, 111, 212, 0.1);
+    }
+
+    .input-container input {
+      border-radius: 10px 0 0 10px;
+      background: #e8e8e8;
+      width: 100%;
+      flex-basis: 75%;
+      padding: 13px 15px;
+      border: none;
+      color: #000000;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .input-container input:focus {
+      outline: none;
+      background: #ffffff;
+      box-shadow: 0 0 15px rgba(26, 111, 212, 0.2);
+    }
+
+    .input-container button {
+      flex-basis: 25%;
+      padding: 13px 18px;
+      background: linear-gradient(135deg, #1a6fd4 0%, #1554b8 100%);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: white;
+      border: none;
+      border-radius: 0 10px 10px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 13px;
+      box-shadow: 0 0 15px rgba(26, 111, 212, 0.4);
+    }
+
+    .input-container button:hover {
+      background: linear-gradient(135deg, #2575dc 0%, #1a6fd4 100%);
+      box-shadow: 0 0 25px rgba(26, 111, 212, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .input-container button:active {
+      transform: translateY(0);
+    }
+
+    #pair {
+      margin-top: 18px;
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .instructions {
+      display: none;
+      margin-top: 22px;
+      background: linear-gradient(135deg, rgba(26, 111, 212, 0.2) 0%, rgba(90, 143, 255, 0.15) 100%);
+      border: 1px solid rgba(26, 111, 212, 0.5);
+      border-radius: 12px;
+      padding: 18px 20px;
+      text-align: left;
+      animation: slideIn 0.4s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .instructions p {
+      color: #c8d8f0;
+      font-size: 13px;
+      margin: 0 0 12px;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+    }
+
+    .instructions ol {
+      color: #d0dff5;
+      font-size: 12px;
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.8;
+    }
+
+    .instructions ol li {
+      margin-bottom: 6px;
+    }
+
+    .instructions ol li span {
+      color: #7eb8ff;
+      font-weight: bold;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      background: rgba(0, 0, 0, 0.8);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      border-top: 1px solid rgba(26, 111, 212, 0.2);
+    }
+
+    @media (max-width: 500px) {
+      .box {
+        width: 92%;
+        max-width: 380px;
+        padding: 35px 26px;
+      }
+
+      .centered-text {
+        font-size: 18px;
+      }
+
+      .input-container {
+        flex-direction: column;
+        gap: 8px;
+        max-width: 100%;
+      }
+
+      .input-container input {
+        border-radius: 10px;
+        width: 100%;
+        padding: 11px 12px;
+      }
+
+      .input-container button {
+        border-radius: 10px;
+        width: 100%;
+        padding: 11px 12px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .box {
+        width: 95%;
+        padding: 28px 22px;
+      }
+
+      .centered-text {
+        font-size: 16px;
+      }
+
+      .box i {
+        font-size: 36px;
+      }
+
+      .instructions {
+        padding: 14px 16px;
+      }
+
+      .instructions p {
+        font-size: 12px;
+      }
+
+      .instructions ol {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <div class="main">
+      <div class="box" id="box">
+        <div id="text">
+          <i class="fa fa-user"></i>
+          <h3 class="centered-text">Yeoboe xmd</h3>
+          <h6 style="color:#aaa;margin:4px 0;">Made On Earth By Humans !</h6>
+          <h6 style="color:#ccc;margin:4px 0 12px;">Enter your number with country code.</h6>
+          <div class="input-container">
+            <input placeholder="2541466xxx" type="number" id="number" name="">
+            <button id="submit">GO</button>
+          </div>
+          <br>
+          <main id="pair"></main>
+
+          <div class="instructions" id="instructions">
+            <p>📋 HOW TO USE YOUR CODE</p>
+            <ol>
+              <li>Open <span>WhatsApp</span> on your phone</li>
+              <li>Tap <span>Linked Devices</span> → <span>Link a Device</span></li>
+              <li>Tap <span>"Link with phone number instead"</span></li>
+              <li>Enter the <span>8-digit code</span> shown above</li>
+              <li>Wait — your <span>session ID</span> will arrive on WhatsApp</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>© Supreme</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"></script>
+  <script>
+    // Create floating particles
+    const particlesContainer = document.getElementById('particles');
+    function createParticles() {
+      for (let i = 0; i < 40; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 12 + 's';
+        particle.style.animationDuration = (20 + Math.random() * 15) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+    createParticles();
+
+    let a = document.getElementById("pair");
+    let b = document.getElementById("submit");
+    let c = document.getElementById("number");
+    let instructions = document.getElementById("instructions");
+
+    async function Copy() {
+      let obj = document.getElementById("copy");
+      let original = obj.innerHTML;
+      await navigator.clipboard.writeText(obj.getAttribute("data-code"));
+      obj.innerHTML = '<span style="color:#7eb8ff;font-weight:bold">✔ COPIED!</span>';
+      setTimeout(() => { obj.innerHTML = original; }, 1200);
+    }
+
+    b.addEventListener("click", async (e) => {
+      e.preventDefault();
+      instructions.style.display = "none";
+      if (!c.value) {
+        a.innerHTML = '<a style="color:white;font-weight:bold">Enter your WhatsApp number with Country Code</a><br><br>';
+      } else if (c.value.replace(/[^0-9]/g, "").length < 11) {
+        a.innerHTML = '<a style="color:#ff6b6b;font-weight:bold">⚠ Invalid Number</a><br><br>';
+      } else {
+        const Nick = c.value.replace(/[^0-9]/g, "");
+        let bb = "", bbc = "";
+        Nick.split('').forEach(ch => {
+          bbc += ch;
+          bb += (bbc.length == 3 || bbc.length == 8) ? " " + ch : ch;
+        });
+        c.type = "text";
+        c.value = "+" + bb;
+        c.style = "color:black;font-size:18px";
+        a.innerHTML = '<a style="color:#7eb8ff;font-weight:bold">⏳ Please wait...</a><br><br>';
+        let { data } = await axios(`/code?number=${Nick}`);
+        let code = data.code || "Service Unavailable";
+        a.innerHTML = `<font id="copy" data-code="${code}" onclick="Copy()" style="cursor:pointer;color:#ff6b6b;font-weight:bold;font-size:22px;letter-spacing:4px">CODE: <span style="color:white;font-weight:bold;letter-spacing:6px">${code}</span></font><br><br>`;
+        if (data.code) instructions.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>

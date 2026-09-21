@@ -1,25 +1,28 @@
 {
-  "name": "Yeoboe-session",
-  "main": "./index.js",
-  "type": "commonjs",
-  "scripts": {
-    "start": "pm2 start index.js --deep-monitoring --attach --name giftedsess",
-    "stop": "pm2 stop giftedsess",
-    "restart": "pm2 restart giftedsess"
+    "name": "junex-ultra-session",
+    "description": "JuneX Ultra WhatsApp session generator",
+    "version": "1.0.0",
+    "main": "./index.js",
+  "engines" : { 
+    "npm" : ">=9.7.2",
+    "node" : ">=20.0.0"
+    },
+    "scripts": {
+    "start": "node index.js"
   },
-  "author": "Yeoboe Tech",
-  "license": "GPL-3.0 license",
+  "author": "JuneX Ultra",
+  "license": "GPL-3.0",
   "dependencies": {
-    "@whiskeysockets/baileys": "npm:baileys@6.7.21",
-    "bcryptjs": "^3.0.2",
-    "body-parser": "*",
-    "express": "*",
-    "fs": "*",
-    "path": "*",
-    "gifted-btns": "*",
-    "pino": "*",
-    "pino-pretty": "^13.0.0",
-    "pm2": "*",
-    "qrcode": "*"
-  }
+    "@whiskeysockets/baileys": "^6.7.16",
+    "qrcode": "^1.5.3",
+    "awesome-phonenumber": "^2.64.0",
+    "pino": "^8.1.0",
+    "phone" : "3.1.30",
+    "jimp" : "1.6.0",
+    "body-parser": "^1.20.1",
+    "pastebin-js": "^1.0.6",
+    "express": "^4.18.1",
+    "path": "^0.12.7"
+   }
 }
+

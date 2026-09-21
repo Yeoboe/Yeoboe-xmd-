@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JuneX Ultra Session</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #06040f;
+      font-family: 'Roboto', 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("https://i.ibb.co/pBbsqnJf/ac09079ffdcb.jpg");
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+      opacity: 0.3;
+      animation: zoomPan 15s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, rgba(26, 111, 212, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(90, 143, 255, 0.1) 0%, transparent 50%);
+      z-index: 1;
+      animation: gradientShift 8s ease-in-out infinite;
+    }
+
+    @keyframes zoomPan {
+      0%, 100% { transform: scale(1) translateX(0); }
+      50% { transform: scale(1.05) translateX(-10px); }
+    }
+
+    @keyframes gradientShift {
+      0%, 100% {
+        background: radial-gradient(circle at 20% 50%, rgba(26, 111, 212, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(90, 143, 255, 0.1) 0%, transparent 50%);
+      }
+      50% {
+        background: radial-gradient(circle at 80% 50%, rgba(26, 111, 212, 0.2) 0%, transparent 50%),
+                    radial-gradient(circle at 20% 80%, rgba(90, 143, 255, 0.15) 0%, transparent 50%);
+      }
+    }
+
+    /* Floating Particles Background */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(26, 111, 212, 0.5);
+      border-radius: 50%;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0% {
+        opacity: 0;
+        transform: translateY(100vh) translateX(0);
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100vh) translateX(100px);
+      }
+    }
+
+    .floating-pad {
+      position: relative;
+      z-index: 10;
+      background: rgba(15, 30, 60, 0.95);
+      border: 2px solid #1a6fd4;
+      border-radius: 25px;
+      padding: 40px 35px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 
+        0 0 30px rgba(26, 111, 212, 0.5),
+        0 0 60px rgba(26, 111, 212, 0.3),
+        inset 0 0 40px rgba(26, 111, 212, 0.1);
+      animation: floatCard 3s ease-in-out infinite, glowPulse 3s ease-in-out infinite;
+      backdrop-filter: blur(15px);
+    }
+
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow: 
+          0 0 30px rgba(26, 111, 212, 0.5),
+          0 0 60px rgba(26, 111, 212, 0.3),
+          inset 0 0 40px rgba(26, 111, 212, 0.1);
+      }
+      50% {
+        box-shadow: 
+          0 0 50px rgba(26, 111, 212, 0.8),
+          0 0 80px rgba(26, 111, 212, 0.5),
+          inset 0 0 50px rgba(26, 111, 212, 0.15);
+      }
+    }
+
+    .pad-title {
+      text-align: center;
+      color: #e5f5f1;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 25px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #5a8fff 0%, #e5f5f1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .btn {
+      --color: #e5f5f1;
+      --color2: rgb(0, 0, 0);
+      width: 100%;
+      padding: 1.1em 1.8em;
+      background: linear-gradient(135deg, #1a6fd4 0%, #1554b8 100%);
+      border-radius: 12px;
+      border: 2px solid #1a6fd4;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      z-index: 1;
+      font-weight: 700;
+      font-size: 15px;
+      font-family: 'Roboto', 'Segoe UI', sans-serif;
+      text-transform: uppercase;
+      color: var(--color);
+      letter-spacing: 0.8px;
+      box-shadow: 0 0 20px rgba(26, 111, 212, 0.4);
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: -1;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      border-color: #5a8fff;
+      box-shadow: 
+        0 0 30px rgba(26, 111, 212, 0.7),
+        0 8px 20px rgba(26, 111, 212, 0.4),
+        inset 0 0 25px rgba(90, 143, 255, 0.15);
+      background: linear-gradient(135deg, #2575dc 0%, #1a6fd4 100%);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+
+    .btn:active {
+      transform: translateY(-1px);
+      box-shadow: 
+        0 0 15px rgba(26, 111, 212, 0.4),
+        inset 0 0 20px rgba(26, 111, 212, 0.25);
+    }
+
+    @media (max-width: 600px) {
+      .floating-pad {
+        width: 95%;
+        max-width: 380px;
+        padding: 30px 25px;
+      }
+
+      .pad-title {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        font-size: 14px;
+        padding: 0.9em 1.4em;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .floating-pad {
+        width: 95%;
+        padding: 25px 20px;
+      }
+
+      .pad-title {
+        font-size: 16px;
+        margin-bottom: 18px;
+      }
+
+      .buttons-container {
+        gap: 12px;
+      }
+
+      .btn {
+        font-size: 13px;
+        padding: 0.8em 1.1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="particles" id="particles"></div>
+
+  <div class="floating-pad">
+    <div class="pad-title">🚀 Pair Your Device</div>
+    <div class="buttons-container">
+      <button onclick="window.open(`/pair`)" class="btn">🔗 Pair Code</button>
+      <button onclick="window.open(`/qr`)" class="btn">📱 QR Scan</button>
+      <button onclick="window.open(`https://github.com/Yeoboe/Yeoboe-xmd/fork`)" class="btn">⭐ Fork Repo</button>
+    </div>
+  </div>
+
+  <script>
+    // Create floating particles
+    const particlesContainer = document.getElementById('particles');
+    function createParticles() {
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 10 + 's';
+        particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+    createParticles();
+  </script>
+</body>
+</html>

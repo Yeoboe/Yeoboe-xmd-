@@ -1,15 +1,20 @@
 {
-    "name": "Gifted Session Generator",
-    "description": "Web Session Generator",
-    "logo": "https://files.catbox.moe/52699c.jpg",
-    "repository": "https://github.com/mauricegift/gifted-sess",
-    "keywords": ["Gifted-Tech"],
+    "name": "june-session",
+    "description": "a session generator for raven-bot",
+    "logo": "https://files.catbox.moe/ojo6av.jpg",
+    "repository": "https://github.com/vinpink2/June-Ultra",
+    "keywords": ["JUNE-BOT"],
     "success_url": "/", 
     "buildpacks": [{ "url": "https://github.com/heroku/heroku-buildpack-nodejs#latest" } ],
     "env": {      
       "PORT": {
         "description": "Port for web app.4000,5000,3000... any!",
-        "value": "50900",
+        "value": "5000",
+        "required": false 
+      },
+      "MESSAGE": {
+        "description": "This site is only for session generating",
+        "value": "",
         "required": false 
       }
     }   
