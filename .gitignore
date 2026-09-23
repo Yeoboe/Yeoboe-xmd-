@@ -1,4 +1,7 @@
 node_modules/
-temp/
-*.log
+temp/*
+!temp/.gitkeep
 .env
+.env.*
+*.log
+.DS_Store

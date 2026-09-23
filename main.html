@@ -2,284 +2,663 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>JuneX Ultra Session</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#07181d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Yeoboe-xmd</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { overflow-x: hidden; }
 
     body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      background: #07181d;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── LOADING SCREEN ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #07181d;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      background: #06040f;
-      font-family: 'Roboto', 'Segoe UI', sans-serif;
-      overflow: hidden;
+      gap: 24px;
+      transition: opacity 0.7s ease, visibility 0.7s ease;
     }
+    #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    /* Animated Background */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url("https://i.ibb.co/pBbsqnJf/ac09079ffdcb.jpg");
-      background-size: cover;
-      background-position: center;
-      z-index: 1;
-      opacity: 0.3;
-      animation: zoomPan 15s ease-in-out infinite;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 20% 50%, rgba(26, 111, 212, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(90, 143, 255, 0.1) 0%, transparent 50%);
-      z-index: 1;
-      animation: gradientShift 8s ease-in-out infinite;
-    }
-
-    @keyframes zoomPan {
-      0%, 100% { transform: scale(1) translateX(0); }
-      50% { transform: scale(1.05) translateX(-10px); }
-    }
-
-    @keyframes gradientShift {
-      0%, 100% {
-        background: radial-gradient(circle at 20% 50%, rgba(26, 111, 212, 0.15) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 80%, rgba(90, 143, 255, 0.1) 0%, transparent 50%);
-      }
-      50% {
-        background: radial-gradient(circle at 80% 50%, rgba(26, 111, 212, 0.2) 0%, transparent 50%),
-                    radial-gradient(circle at 20% 80%, rgba(90, 143, 255, 0.15) 0%, transparent 50%);
-      }
-    }
-
-    /* Floating Particles Background */
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    .particle {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: rgba(26, 111, 212, 0.5);
-      border-radius: 50%;
-      animation: float 20s infinite ease-in-out;
-    }
-
-    @keyframes float {
-      0% {
-        opacity: 0;
-        transform: translateY(100vh) translateX(0);
-      }
-      10% {
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-100vh) translateX(100px);
-      }
-    }
-
-    .floating-pad {
+    .loader-ring {
       position: relative;
-      z-index: 10;
-      background: rgba(15, 30, 60, 0.95);
-      border: 2px solid #1a6fd4;
-      border-radius: 25px;
-      padding: 40px 35px;
-      width: 90%;
-      max-width: 450px;
-      box-shadow: 
-        0 0 30px rgba(26, 111, 212, 0.5),
-        0 0 60px rgba(26, 111, 212, 0.3),
-        inset 0 0 40px rgba(26, 111, 212, 0.1);
-      animation: floatCard 3s ease-in-out infinite, glowPulse 3s ease-in-out infinite;
-      backdrop-filter: blur(15px);
+      width: 88px;
+      height: 88px;
+    }
+    .loader-ring svg {
+      width: 88px;
+      height: 88px;
+      animation: rotateSvg 2s linear infinite;
+    }
+    @keyframes rotateSvg { to { transform: rotate(360deg); } }
+
+    .loader-ring svg circle { fill: none; stroke-width: 4; stroke-linecap: round; }
+    .loader-ring .track { stroke: rgba(255,255,255,0.06); }
+    .loader-ring .fill {
+      stroke: url(#grad);
+      stroke-dasharray: 200;
+      stroke-dashoffset: 50;
+      animation: dash 1.8s ease-in-out infinite;
+    }
+    @keyframes dash {
+      0%   { stroke-dashoffset: 200; }
+      50%  { stroke-dashoffset: 40; }
+      100% { stroke-dashoffset: 200; }
     }
 
-    @keyframes floatCard {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
+    .loader-avatar {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #07181d;
     }
 
-    @keyframes glowPulse {
-      0%, 100% {
-        box-shadow: 
-          0 0 30px rgba(26, 111, 212, 0.5),
-          0 0 60px rgba(26, 111, 212, 0.3),
-          inset 0 0 40px rgba(26, 111, 212, 0.1);
-      }
-      50% {
-        box-shadow: 
-          0 0 50px rgba(26, 111, 212, 0.8),
-          0 0 80px rgba(26, 111, 212, 0.5),
-          inset 0 0 50px rgba(26, 111, 212, 0.15);
-      }
+    .loader-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
-
-    .pad-title {
-      text-align: center;
-      color: #e5f5f1;
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 25px;
-      letter-spacing: 2px;
+    .loader-text {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #5a8fff 0%, #e5f5f1 100%);
+      color: rgba(255,255,255,0.35);
+    }
+    .loader-text span {
+      background: linear-gradient(90deg, #00c2a8, #ff6f61, #ffd166);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      background-size: 200%;
+      animation: shimmer 2s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+    .loader-dots { display: flex; gap: 5px; }
+    .loader-dots span {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(0,194,168,0.55);
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,100%{transform:translateY(0);opacity:0.35} 50%{transform:translateY(-6px);opacity:1} }
+
+    /* ── NAV LOADING OVERLAY ── */
+    #nav-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 8888;
+      background: rgba(7,11,20,0.96);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      backdrop-filter: blur(14px);
+    }
+    #nav-loader.active { display: flex; }
+
+    /* ── AMBIENT BLOBS ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.14;
+      pointer-events: none;
+      animation: blobMove 14s ease-in-out infinite;
+    }
+    .blob-1 { width: 560px; height: 560px; background: #00c2a8; top: -220px; left: -200px; }
+    .blob-2 { width: 420px; height: 420px; background: #ff6f61; bottom: -100px; right: -100px; animation-delay: -7s; }
+    @keyframes blobMove { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 0;
     }
 
-    .buttons-container {
+    /* ── MAIN CONTENT ── */
+    #content {
+      position: relative;
+      z-index: 10;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      align-items: center;
+      padding: max(56px, calc(env(safe-area-inset-top) + 56px)) 16px max(64px, calc(env(safe-area-inset-bottom) + 24px));
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      min-height: 100vh;
     }
 
-    .btn {
-      --color: #e5f5f1;
-      --color2: rgb(0, 0, 0);
+    .card {
       width: 100%;
-      padding: 1.1em 1.8em;
-      background: linear-gradient(135deg, #1a6fd4 0%, #1554b8 100%);
-      border-radius: 12px;
-      border: 2px solid #1a6fd4;
-      transition: all 0.4s ease;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      z-index: 1;
-      font-weight: 700;
-      font-size: 15px;
-      font-family: 'Roboto', 'Segoe UI', sans-serif;
-      text-transform: uppercase;
-      color: var(--color);
-      letter-spacing: 0.8px;
-      box-shadow: 0 0 20px rgba(26, 111, 212, 0.4);
+      max-width: 460px;
+      background: rgba(11, 35, 39, 0.88);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 40px 36px 36px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,194,168,0.1);
+      text-align: center;
+      margin-bottom: 24px;
     }
 
-    .btn::before {
+    /* Avatar */
+    .avatar-wrap {
+      width: 96px; height: 96px;
+      margin: 0 auto 16px;
+      position: relative;
+    }
+    .avatar-wrap::before {
       content: '';
       position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      z-index: -1;
+      inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00c2a8, #ff6f61, #ffd166);
+      animation: spin 4s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .avatar {
+      position: relative; width: 100%; height: 100%;
+      border-radius: 50%; object-fit: cover;
+      border: 3px solid #07181d; z-index: 1;
     }
 
-    .btn:hover {
-      transform: translateY(-3px) scale(1.02);
-      border-color: #5a8fff;
-      box-shadow: 
-        0 0 30px rgba(26, 111, 212, 0.7),
-        0 8px 20px rgba(26, 111, 212, 0.4),
-        inset 0 0 25px rgba(90, 143, 255, 0.15);
-      background: linear-gradient(135deg, #2575dc 0%, #1a6fd4 100%);
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.28);
+      color: #10b981; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.08em; padding: 4px 12px;
+      border-radius: 100px; margin-bottom: 14px; text-transform: uppercase;
+    }
+    .status-dot {
+      width: 6px; height: 6px; background: #10b981;
+      border-radius: 50%; animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+    h1 { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .tagline { font-size: 13px; color: rgba(255,255,255,0.36); margin-bottom: 20px; }
+
+    /* Counter */
+    .counter-box {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: rgba(0,194,168,0.07);
+      border: 1px solid rgba(0,194,168,0.18);
+      border-radius: 14px; padding: 12px 20px; margin-bottom: 26px;
+    }
+    .counter-icon { opacity: 0.6; display: flex; align-items: center; }
+    .counter-text { text-align: left; }
+    .counter-num {
+      font-size: 24px; font-weight: 800;
+      background: linear-gradient(90deg, #65e6d1, #ff9a8d);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .counter-label { font-size: 11px; color: rgba(255,255,255,0.32); font-weight: 500; letter-spacing: 0.06em; margin-top: 2px; }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      margin-bottom: 26px;
     }
 
-    .btn:hover::before {
-      opacity: 1;
+    .btn-group { display: flex; flex-direction: column; gap: 11px; margin-bottom: 22px; }
+
+    .btn {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; width: 100%; padding: 15px 20px;
+      border-radius: 14px; border: none;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.22s ease; letter-spacing: 0.01em;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #00c2a8, #087f74);
+      color: #fff; box-shadow: 0 4px 20px rgba(0,194,168,0.32);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,194,168,0.5); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.78);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-secondary:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08); color: #fff; }
+    .btn:active { transform: translateY(0); }
+
+    .footer-inline { display: block; font-size: 12px; color: rgba(255,255,255,0.18); margin-top: 2px; }
+    .footer-inline span { color: rgba(0,194,168,0.55); }
+
+    /* ── REPOS SECTION ── */
+    .section-title {
+      width: 100%; max-width: 460px;
+      font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.28);
+      letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 12px; padding-left: 4px;
     }
 
-    .btn:active {
-      transform: translateY(-1px);
-      box-shadow: 
-        0 0 15px rgba(26, 111, 212, 0.4),
-        inset 0 0 20px rgba(26, 111, 212, 0.25);
+    .repos-grid {
+      width: 100%; max-width: 460px;
+      display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 40px;
     }
 
-    @media (max-width: 600px) {
-      .floating-pad {
-        width: 95%;
-        max-width: 380px;
-        padding: 30px 25px;
-      }
-
-      .pad-title {
-        font-size: 18px;
-        margin-bottom: 20px;
-      }
-
-      .btn {
-        font-size: 14px;
-        padding: 0.9em 1.4em;
-      }
+    .repo-card {
+      background: rgba(11,35,39,0.85);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      text-decoration: none; backdrop-filter: blur(20px);
+      transition: all 0.22s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.28);
+    }
+    .repo-card:hover {
+      border-color: rgba(0,194,168,0.35);
+      background: rgba(0,194,168,0.06);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,194,168,0.15);
     }
 
-    @media (max-width: 400px) {
-      .floating-pad {
-        width: 95%;
-        padding: 25px 20px;
-      }
+    .repo-left { display: flex; align-items: center; gap: 14px; }
+    .repo-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, rgba(0,194,168,0.18), rgba(255,111,97,0.18));
+      border: 1px solid rgba(255,255,255,0.07);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0; color: rgba(255,255,255,0.7);
+    }
+    .repo-info { text-align: left; }
+    .repo-bot-name {
+      font-size: 10px; font-weight: 600; color: #65e6d1;
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .repo-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .repo-handle { font-size: 11px; color: rgba(255,255,255,0.28); }
 
-      .pad-title {
-        font-size: 16px;
-        margin-bottom: 18px;
-      }
+    .repo-arrow {
+      color: rgba(255,255,255,0.18); font-size: 16px;
+      transition: color 0.2s, transform 0.2s; flex-shrink: 0;
+    }
+    .repo-card:hover .repo-arrow { color: #65e6d1; transform: translateX(3px); }
 
-      .buttons-container {
-        gap: 12px;
-      }
+    @media (max-width: 480px) {
+      .card { padding: 28px 18px 24px; border-radius: 20px; }
+      #content { padding-top: max(52px, calc(env(safe-area-inset-top) + 52px)); padding-left: 12px; padding-right: 12px; }
+      h1 { font-size: 22px; }
+      .counter-num { font-size: 20px; }
+      .counter-box { padding: 10px 16px; }
+    }
+    @media (max-width: 360px) {
+      .card { padding: 24px 14px 20px; border-radius: 18px; }
+      h1 { font-size: 20px; }
+      .btn { padding: 13px 16px; font-size: 13px; }
+      .avatar-wrap { width: 80px; height: 80px; }
+    }
 
-      .btn {
-        font-size: 13px;
-        padding: 0.8em 1.1em;
+    /* ── STATUS BAR ── */
+    #status-bar {
+      position: fixed;
+      top: 14px;
+      right: 16px;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(9, 29, 32, 0.82);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 100px;
+      padding: 6px 14px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.75);
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+    .sb-sep { display: inline-block; width: 1px; height: 12px; background: rgba(255,255,255,0.14); margin: 0 2px; vertical-align: middle; }
+    .sb-item { display: flex; align-items: center; gap: 4px; }
+    .sb-icon { font-size: 12px; line-height: 1; }
+    #sb-time { color: #fff; font-weight: 700; }
+    @media (max-width: 480px) {
+      #status-bar { top: max(10px, env(safe-area-inset-top)); right: 10px; padding: 5px 10px; gap: 6px; font-size: 10px; }
+    }
+    @media (max-width: 360px) {
+      #status-bar { font-size: 9px; padding: 4px 8px; gap: 5px; }
+      #sb-date { display: none; }
+      .sb-sep:nth-child(4) { display: none; }
+    }
+  
+    /* Yeoboe-xmd Tech visual system: calm, high-contrast, and mobile-first. */
+    ::selection { background: rgba(0, 194, 168, 0.32); color: #fffaf0; }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 12%;
+      right: 12%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 194, 168, 0.8), rgba(255, 111, 97, 0.75), transparent);
+      opacity: 0.9;
+    }
+    .btn, .go-btn, .retry-btn, .refresh-btn, .repo-card {
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .btn:focus-visible, .go-btn:focus-visible, .retry-btn:focus-visible, .refresh-btn:focus-visible,
+    .phone-input:focus-visible, .repo-card:focus-visible {
+      outline: 2px solid #ffd166;
+      outline-offset: 3px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
       }
     }
   </style>
 </head>
 <body>
-  <div class="particles" id="particles"></div>
 
-  <div class="floating-pad">
-    <div class="pad-title">🚀 Pair Your Device</div>
-    <div class="buttons-container">
-      <button onclick="window.open(`/pair`)" class="btn">🔗 Pair Code</button>
-      <button onclick="window.open(`/qr`)" class="btn">📱 QR Scan</button>
-      <button onclick="window.open(`https://github.com/Yeoboe/Yeoboe-xmd/fork`)" class="btn">⭐ Fork Repo</button>
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <span class="sb-item"><span class="sb-icon" id="sb-net-icon"></span><span id="sb-net">Online</span></span>
+    <span class="sb-sep"></span>
+    <span class="sb-item"><span class="sb-icon" id="sb-bat-icon"></span><span id="sb-battery">—</span></span>
+    <span class="sb-sep"></span>
+    <span id="sb-date">—</span>
+    <span class="sb-sep"></span>
+    <span id="sb-time">—</span>
+  </div>
+
+  <!-- LOADING SCREEN -->
+  <div id="loader">
+    <div class="loader-ring">
+      <svg viewBox="0 0 90 90">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#00c2a8"/>
+            <stop offset="50%"  stop-color="#ff6f61"/>
+            <stop offset="100%" stop-color="#ffd166"/>
+          </linearGradient>
+        </defs>
+        <circle class="track" cx="45" cy="45" r="38"/>
+        <circle class="fill"  cx="45" cy="45" r="38"/>
+      </svg>
+      <img class="loader-avatar" src="https://files.catbox.moe/lnwjpd.jpeg" alt="IT"
+           onerror="this.src='https://ui-avatars.com/api/?name=IT&background=1d6fe8&color=fff&size=60'">
+    </div>
+    <div class="loader-label">
+      <div class="loader-text"><span>Yeoboe-xmd Tech · Loading</span></div>
+      <div class="loader-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- NAV LOADING OVERLAY -->
+  <div id="nav-loader">
+    <div class="loader-ring">
+      <svg viewBox="0 0 90 90">
+        <defs>
+          <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#00c2a8"/>
+            <stop offset="50%"  stop-color="#ff6f61"/>
+            <stop offset="100%" stop-color="#ffd166"/>
+          </linearGradient>
+        </defs>
+        <circle class="track" cx="45" cy="45" r="38"/>
+        <circle class="fill"  cx="45" cy="45" r="38" stroke="url(#grad2)"/>
+      </svg>
+      <img class="loader-avatar" src="https://files.catbox.moe/lnwjpd.jpeg" alt="IT"
+           onerror="this.src='https://ui-avatars.com/api/?name=IT&background=1d6fe8&color=fff&size=60'">
+    </div>
+    <div class="loader-label">
+      <div class="loader-text"><span>Yeoboe-xmd Tech · Loading</span></div>
+      <div class="loader-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- MAIN CONTENT -->
+  <div id="content">
+    <div class="card">
+      <div class="avatar-wrap">
+        <img class="avatar" src="https://files.catbox.moe/lnwjpd.jpeg" alt="Yeoboe-xmd Tech"
+             onerror="this.src='https://ui-avatars.com/api/?name=IT&background=1d6fe8&color=fff&size=100'">
+      </div>
+
+      <div class="status-badge">
+        <div class="status-dot"></div> Online
+      </div>
+
+      <h1>Yeoboe-xmd</h1>
+      <p class="tagline">WhatsApp Session Generator</p>
+
+      <div class="counter-box">
+        <div class="counter-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+        </div>
+        <div class="counter-text">
+          <div class="counter-num" id="count">—</div>
+          <div class="counter-label">Total Sessions Generated</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="navigate('/pair')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          Link with Pairing Code
+        </button>
+        <button class="btn btn-secondary" onclick="navigate('/qr-page')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Link with QR Code
+        </button>
+      </div>
+
+      <div class="footer-inline">© 2026 <span>Yeoboe-xmd Tech</span> · All rights reserved</div>
+    </div>
+
+    <!-- REPOS -->
+    <div class="section-title">Yeoboe-xmd Tech Projects · Fork &amp; Deploy</div>
+    <div class="repos-grid">
+
+      <a class="repo-card" href="https://github.com/Yeoboe/Yeoboe-xmd-
+        <div class="repo-left">
+          <div class="repo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          </div>
+          <div class="repo-info">
+            <div class="repo-bot-name">Yeoboe-xmd</div>
+            <div class="repo-name">Yeoboe-xmd</div>
+            <div class="repo-handle">@Yeoboe-xmd</div>
+          </div>
+        </div>
+        <div class="repo-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+      </a>
+
+      <a class="repo-card" href="https://github.com/Yeoboe/Yeoboe-xmd-
+        <div class="repo-left">
+          <div class="repo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" opacity=".9"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <div class="repo-info">
+            <div class="repo-bot-name">Yeoboe-xmd-</div>
+            <div class="repo-name">Yeoboe-xmd-</div>
+            <div class="repo-handle">@Yeoboe-xmd</div>
+          </div>
+        </div>
+        <div class="repo-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+      </a>
+
+      <a class="repo-card" href="https://github.com/Yeoboe/Yeoboe-xmd-
+        <div class="repo-left">
+          <div class="repo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="repo-info">
+            <div class="repo-bot-name">Yeoboe-xmd Tech Official</div>
+            <div class="repo-name">Yeoboe-xmd</div>
+            <div class="repo-handle">@Yeoboe-xmd</div>
+          </div>
+        </div>
+        <div class="repo-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+      </a>
+
     </div>
   </div>
 
   <script>
-    // Create floating particles
-    const particlesContainer = document.getElementById('particles');
-    function createParticles() {
-      for (let i = 0; i < 30; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 10 + 's';
-        particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-        particlesContainer.appendChild(particle);
+    // ── Loading screen: hide after 1.8s ──
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+      }, 1800);
+    });
+
+    // ── Nav loading: show overlay then navigate ──
+    function navigate(path) {
+      const nav = document.getElementById('nav-loader');
+      nav.classList.add('active');
+      setTimeout(() => { window.location.href = path; }, 700);
+    }
+
+    // ── Fetch session count ──
+    async function loadCount() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        animateCount(document.getElementById('count'), data.sessions);
+      } catch {
+        document.getElementById('count').textContent = '—';
       }
     }
-    createParticles();
+
+    function animateCount(el, target) {
+      const duration = 1600;
+      const start = Math.max(0, target - Math.min(target, 200));
+      const startTime = performance.now();
+      function update(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(start + (target - start) * ease).toLocaleString();
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    }
+
+    loadCount();
+  </script>
+
+  <script>
+    // ── STATUS BAR ──
+    (function () {
+      const SVG = {
+        wifi:     `<svg width="14" height="12" viewBox="0 0 24 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M1.42 7a16 16 0 0 1 21.16 0"/><path d="M5 11.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.5" r="1.2" fill="currentColor" stroke="none"/></svg>`,
+        signal:   `<svg width="13" height="12" viewBox="0 0 18 16" fill="currentColor"><rect x="0" y="10" width="3.5" height="6" rx="1"/><rect x="4.9" y="6" width="3.5" height="10" rx="1"/><rect x="9.8" y="2" width="3.5" height="14" rx="1"/><rect x="14.7" y="0" width="3.5" height="16" rx="1"/></svg>`,
+        globe:    `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+        offline:  `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M5.3 13a9.5 9.5 0 0 1 3.2-2.1M15.8 11.2a9.5 9.5 0 0 1 3.1 1.8"/><path d="M2 8.82A15 15 0 0 1 6.5 6.5M11.5 5.1a15 15 0 0 1 10.7 3.9"/><circle cx="12" cy="20" r="1" fill="#f87171" stroke="none"/></svg>`,
+        battery:  (pct, charging) => {
+          const fill = charging ? '#50e3a4' : pct <= 20 ? '#f87171' : 'currentColor';
+          const w = Math.max(1, Math.round(pct / 100 * 14));
+          return `<svg width="20" height="12" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="1" y="1" width="21" height="14" rx="3"/><path d="M23 5.5v5a2.5 2.5 0 0 0 0-5z" fill="currentColor" stroke="none" opacity=".5"/><rect x="3" y="3.5" width="${w}" height="9" rx="1.5" fill="${fill}" stroke="none"/>${charging ? `<path d="M11 10.5l1.5-3h2.5l-1.5 3h2" stroke="none" fill="#fff" opacity=".9"/>` : ''}</svg>`;
+        },
+      };
+
+      const userTz = (() => {
+        try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Africa/Nairobi'; }
+        catch { return 'Africa/Nairobi'; }
+      })();
+
+      function updateClock() {
+        const now = new Date();
+        document.getElementById('sb-time').textContent = now.toLocaleTimeString('en-KE', {
+          timeZone: userTz, hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+        document.getElementById('sb-date').textContent = now.toLocaleDateString('en-KE', {
+          timeZone: userTz, weekday: 'short', day: 'numeric', month: 'short'
+        });
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      if ('getBattery' in navigator) {
+        navigator.getBattery().then(function (bat) {
+          function refreshBat() {
+            const pct = Math.round(bat.level * 100);
+            document.getElementById('sb-bat-icon').innerHTML = SVG.battery(pct, bat.charging);
+            const el = document.getElementById('sb-battery');
+            el.textContent = pct + '%';
+            el.style.color = (!bat.charging && pct <= 20) ? '#f87171' : '';
+          }
+          refreshBat();
+          bat.addEventListener('levelchange', refreshBat);
+          bat.addEventListener('chargingchange', refreshBat);
+        });
+      } else {
+        // Battery API not available — hide battery section
+        document.getElementById('sb-battery').style.display = 'none';
+        document.getElementById('sb-bat-icon').closest('.sb-item').style.display = 'none';
+        document.querySelectorAll('.sb-sep')[1].style.display = 'none';
+      }
+
+      function refreshNet() {
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        let icon = SVG.globe, label = 'Online';
+        if (!navigator.onLine) { icon = SVG.offline; label = 'Offline'; }
+        else if (conn) {
+          const t = conn.type || '', e = (conn.effectiveType || '').toUpperCase();
+          if (t === 'wifi' || t === 'ethernet') { icon = SVG.wifi; label = 'WiFi'; }
+          else if (t === 'cellular') { icon = SVG.signal; label = e || 'Mobile'; }
+          else if (e) { icon = SVG.signal; label = e; }
+        }
+        document.getElementById('sb-net-icon').innerHTML = icon;
+        document.getElementById('sb-net').textContent = label;
+      }
+      refreshNet();
+      window.addEventListener('online', refreshNet);
+      window.addEventListener('offline', refreshNet);
+      try { navigator.connection && navigator.connection.addEventListener('change', refreshNet); } catch {}
+    })();
   </script>
 </body>
 </html>

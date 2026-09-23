@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#07181d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Yeoboe-xmd · Pair Code</title>
+  <title>Yeoboe-xmd · QR Code</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -54,7 +54,6 @@
     .card {
       position: relative;
       z-index: 10;
-      overflow: hidden;
       width: min(100%, 440px);
       background: rgba(11, 35, 39, 0.88);
       border: 1px solid rgba(255,255,255,0.08);
@@ -102,7 +101,7 @@
     .sub {
       font-size: 13px;
       color: rgba(255,255,255,0.38);
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
     .divider {
@@ -111,203 +110,206 @@
       margin-bottom: 24px;
     }
 
-    /* Input row */
-    .input-row {
+    /* QR container */
+    #qr-area {
+      min-height: 220px;
       display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      width: 100%;
-    }
-    .phone-input { min-width: 0; }
-
-    .phone-input {
-      flex: 1;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 13px 16px;
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      outline: none;
-      transition: all 0.2s;
-      -moz-appearance: textfield;
-    }
-    .phone-input::-webkit-outer-spin-button,
-    .phone-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .phone-input::placeholder { color: rgba(255,255,255,0.22); font-weight: 400; }
-    .phone-input:focus {
-      border-color: rgba(0,194,168,0.55);
-      background: rgba(0,194,168,0.06);
-      box-shadow: 0 0 0 3px rgba(0,194,168,0.11);
-    }
-
-    .go-btn {
-      padding: 10px 14px;
-      background: linear-gradient(135deg, #00c2a8, #087f74);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s;
-      white-space: nowrap;
-      flex-shrink: 0;
-      box-shadow: 0 4px 16px rgba(0,194,168,0.3);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .go-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,194,168,0.45); }
-    .go-btn:active { transform: translateY(0); }
-    .go-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    /* Status area */
-    #status {
-      min-height: 56px;
-      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin-bottom: 8px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
-    /* Pairing code display */
-    .code-display {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 6px;
-      background: linear-gradient(135deg, #65e6d1, #ff9a8d);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      cursor: pointer;
-      user-select: none;
-      padding: 8px 0;
-      transition: opacity 0.2s;
-    }
-    .code-display:hover { opacity: 0.8; }
-
-    .copy-hint {
-      font-size: 11px;
-      color: rgba(255,255,255,0.28);
-      margin-top: 4px;
-      letter-spacing: 0.05em;
-    }
-
-    /* Copied badge */
-    .copied-badge {
+    /* QR image box */
+    .qr-frame {
+      position: relative;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      background: rgba(16,185,129,0.1);
-      border: 1px solid rgba(16,185,129,0.28);
-      color: #10b981;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 100px;
-      animation: fadeIn 0.25s ease;
+      justify-content: center;
+      padding: 14px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,194,168,0.2);
+      display: none;
     }
-    @keyframes fadeIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+    .qr-frame img {
+      width: 190px;
+      height: 190px;
+      display: block;
+      border-radius: 6px;
+    }
 
-    /* Loading spinner */
-    .loading {
+    /* Corner accents on QR frame */
+    .qr-frame::before, .qr-frame::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: #00c2a8;
+      border-style: solid;
+      border-radius: 4px;
+    }
+    .qr-frame::before { top: -2px; left: -2px; border-width: 3px 0 0 3px; }
+    .qr-frame::after  { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; }
+
+    /* Expiry bar */
+    .qr-timer {
+      width: 100%;
+      max-width: 218px;
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      display: none;
+      margin-top: 4px;
+    }
+    .qr-timer-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #00c2a8, #ff6f61);
+      border-radius: 4px;
+      transform-origin: left;
+      animation: timerDrain 55s linear forwards;
+    }
+    @keyframes timerDrain { to { transform: scaleX(0); } }
+
+    /* Modern spinner */
+    .qr-loading {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      color: rgba(255,255,255,0.45);
-      font-size: 13px;
-      font-weight: 500;
+      gap: 16px;
     }
-    .spinner-wrap {
+    .qr-spinner {
       position: relative;
-      width: 22px;
-      height: 22px;
+      width: 56px;
+      height: 56px;
     }
-    .spinner-wrap svg {
-      width: 22px;
-      height: 22px;
-      animation: rotateSvg 1.4s linear infinite;
+    .qr-spinner svg {
+      width: 56px;
+      height: 56px;
+      animation: rotateSvg 1.8s linear infinite;
     }
     @keyframes rotateSvg { to { transform: rotate(360deg); } }
-    .spin-track { fill: none; stroke: rgba(0,194,168,0.15); stroke-width: 3; }
-    .spin-fill  { fill: none; stroke: #00c2a8; stroke-width: 3; stroke-linecap: round;
-                  stroke-dasharray: 50; stroke-dashoffset: 12; }
+    .qr-spinner .track { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 4; }
+    .qr-spinner .fill {
+      fill: none;
+      stroke: url(#qrGrad);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 140;
+      stroke-dashoffset: 35;
+      animation: dashSpin 1.6s ease-in-out infinite;
+    }
+    @keyframes dashSpin {
+      0%   { stroke-dashoffset: 140; }
+      50%  { stroke-dashoffset: 35; }
+      100% { stroke-dashoffset: 140; }
+    }
 
-    .error-msg {
-      color: #f87171;
+    .qr-loading-text {
       font-size: 13px;
+      color: rgba(255,255,255,0.4);
       font-weight: 500;
     }
-
-    /* Success message (sent to WhatsApp, shown on page as note) */
-    .success-box {
-      display: none;
-      background: rgba(16,185,129,0.07);
-      border: 1px solid rgba(16,185,129,0.22);
-      border-radius: 16px;
-      padding: 18px 20px;
-      text-align: left;
-      margin-top: 12px;
-      animation: slideUp 0.3s ease;
-    }
-    @keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-
-    .success-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #10b981;
-      margin-bottom: 8px;
+    .qr-loading-dots {
       display: flex;
+      gap: 5px;
+    }
+    .qr-loading-dots span {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(0,194,168,0.6);
+      animation: dotBounce 1.2s ease-in-out infinite;
+    }
+    .qr-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .qr-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce { 0%,100%{transform:translateY(0);opacity:0.4} 50%{transform:translateY(-5px);opacity:1} }
+
+    /* Error state */
+    .qr-error {
+      display: none;
+      flex-direction: column;
       align-items: center;
-      gap: 7px;
+      gap: 10px;
     }
-    .success-body {
+    .qr-error-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.25);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .qr-error-text {
       font-size: 13px;
-      color: rgba(255,255,255,0.6);
-      line-height: 1.7;
+      color: rgba(248,113,113,0.9);
+      font-weight: 500;
     }
-    .success-note {
-      margin-top: 10px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.35);
-      line-height: 1.6;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding-top: 10px;
+    .retry-btn {
+      padding: 9px 20px;
+      background: rgba(0,194,168,0.12);
+      border: 1px solid rgba(0,194,168,0.3);
+      color: #65e6d1;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
     }
+    .retry-btn:hover { background: rgba(0,194,168,0.2); transform: translateY(-1px); }
 
     /* Instructions */
     .instructions {
-      display: none;
       background: rgba(0,194,168,0.06);
-      border: 1px solid rgba(0,194,168,0.18);
+      border: 1px solid rgba(0,194,168,0.2);
       border-radius: 14px;
       padding: 18px 20px;
       text-align: left;
-      margin-top: 12px;
-      animation: slideUp 0.3s ease;
+      margin-top: 4px;
+      animation: fadeIn 0.3s ease;
     }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
 
     .instructions-title {
       font-size: 11px;
       font-weight: 700;
-      color: rgba(255,255,255,0.38);
+      color: rgba(255,255,255,0.4);
       letter-spacing: 0.1em;
       text-transform: uppercase;
       margin-bottom: 12px;
     }
-
     .instructions ol {
       padding-left: 18px;
-      color: rgba(255,255,255,0.58);
+      color: rgba(255,255,255,0.6);
       font-size: 13px;
       line-height: 1.9;
     }
     .instructions ol li { margin-bottom: 2px; }
     .instructions ol li b { color: rgba(255,255,255,0.85); }
+
+    /* Refresh button */
+    .refresh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      display: none;
+      margin-top: 12px;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,0.09); color: #fff; transform: translateY(-1px); }
+    .refresh-btn svg { transition: transform 0.4s; }
+    .refresh-btn:hover svg { transform: rotate(180deg); }
 
     footer {
       position: fixed;
@@ -319,9 +321,9 @@
       background: rgba(7,11,20,0.9);
       border-top: 1px solid rgba(255,255,255,0.05);
       font-size: 12px;
-      color: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.2);
     }
-    footer span { color: rgba(0,194,168,0.55); }
+    footer span { color: rgba(0,194,168,0.6); }
 
     @media (max-width: 480px) {
       .card { padding: 28px 18px 24px; border-radius: 22px; }
@@ -329,15 +331,14 @@
     @media (max-width: 420px) {
       .card { padding: 24px 14px 20px; border-radius: 18px; }
       h1 { font-size: 20px; }
-      .code-display { font-size: 18px; letter-spacing: 4px; }
+      .qr-frame img { width: 160px; height: 160px; }
+      .qr-frame { padding: 10px; }
     }
     @media (max-width: 360px) {
       h1 { font-size: 18px; }
-      .input-row { flex-direction: column; }
-      .go-btn { width: 100%; justify-content: center; padding: 13px; }
-      .phone-input { font-size: 14px; }
+      .qr-frame img { width: 140px; height: 140px; }
       .avatar-wrap { width: 68px; height: 68px; }
-      .code-display { font-size: 16px; letter-spacing: 3px; }
+      .qr-timer { max-width: 168px; }
     }
 
     /* ── STATUS BAR ── */
@@ -361,7 +362,7 @@
       white-space: nowrap;
       letter-spacing: 0.02em;
     }
-    .sb-sep { display: inline-block; width: 1px; height: 12px; background: rgba(255,255,255,0.14); margin: 0 2px; vertical-align: middle; }
+    .sb-sep { display: inline-block; width: 1px; height: 12px; background: rgba(255,255,255,0.15); margin: 0 2px; vertical-align: middle; }
     .sb-item { display: flex; align-items: center; gap: 4px; }
     .sb-icon { font-size: 12px; line-height: 1; }
     #sb-time { color: #fff; font-weight: 700; }
@@ -426,150 +427,134 @@
     </div>
 
     <h1>Yeoboe-xmd</h1>
-    <p class="sub">Enter your number with country code</p>
+    <p class="sub">Scan the QR code with WhatsApp</p>
 
     <div class="divider"></div>
 
-    <div class="input-row">
-      <input class="phone-input" type="number" id="number" placeholder="2547XXXXXXXX" />
-      <button class="go-btn" id="submit">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        Get Code
-      </button>
+    <!-- QR area -->
+    <div id="qr-area">
+      <!-- Loading -->
+      <div class="qr-loading" id="qr-loading">
+        <div class="qr-spinner">
+          <svg viewBox="0 0 56 56">
+            <defs>
+              <linearGradient id="qrGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"   stop-color="#00c2a8"/>
+                <stop offset="50%"  stop-color="#ff6f61"/>
+                <stop offset="100%" stop-color="#ffd166"/>
+              </linearGradient>
+            </defs>
+            <circle class="track" cx="28" cy="28" r="23"/>
+            <circle class="fill"  cx="28" cy="28" r="23"/>
+          </svg>
+        </div>
+        <div class="qr-loading-text">Generating QR code…</div>
+        <div class="qr-loading-dots"><span></span><span></span><span></span></div>
+      </div>
+
+      <!-- QR image -->
+      <div class="qr-frame" id="qr-frame">
+        <img id="qr-img" src="" alt="QR Code">
+      </div>
+      <div class="qr-timer" id="qr-timer">
+        <div class="qr-timer-fill" id="qr-timer-fill"></div>
+      </div>
+
+      <!-- Error -->
+      <div class="qr-error" id="qr-error">
+        <div class="qr-error-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="#f87171"/>
+          </svg>
+        </div>
+        <div class="qr-error-text">Failed to load QR code</div>
+        <button class="retry-btn" onclick="loadQR()">Try again</button>
+      </div>
     </div>
 
-    <div id="status"></div>
-    <div id="copy-hint" class="copy-hint" style="display:none">Tap code to copy</div>
+    <button class="refresh-btn" id="refresh-btn" onclick="loadQR()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.93"/>
+      </svg>
+      New QR Code
+    </button>
 
-    <div class="instructions" id="instructions">
-      <div class="instructions-title">How to link</div>
+    <div class="instructions" id="instructions" style="display:none;">
+      <div class="instructions-title">How to scan</div>
       <ol>
         <li>Open <b>WhatsApp</b> on your phone</li>
         <li>Tap <b>Linked Devices</b> → <b>Link a Device</b></li>
-        <li>Tap <b>"Link with phone number instead"</b></li>
-        <li>Enter the <b>8-digit code</b> shown above</li>
+        <li>Point your camera at the <b>QR code</b> above</li>
         <li>Wait — your <b>session ID</b> will arrive on WhatsApp</li>
       </ol>
-    </div>
-
-    <div class="success-box" id="success-box">
-      <div class="success-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Yeoboe-xmd x Session Linked Successfully!
-      </div>
-      <div class="success-body">
-        Your bot is now connected to your WhatsApp. The session ID has been sent to your phone — check your WhatsApp messages.
-        <br><br>
-        Nobody can access your WhatsApp account or read your messages using the session ID alone. It only allows your bot to send and receive messages on your behalf.
-      </div>
-      <div class="success-note">
-        Just in case — please don't share your session ID with anyone you don't fully trust. Copy it from your WhatsApp and paste it into the SESSION field when deploying your bot.
-      </div>
     </div>
   </div>
 
   <footer>© 2026 <span>Yeoboe-xmd Tech</span> · All rights reserved</footer>
 
   <script>
-    const statusEl    = document.getElementById('status');
-    const copyHint    = document.getElementById('copy-hint');
+    const qrLoading = document.getElementById('qr-loading');
+    const qrFrame   = document.getElementById('qr-frame');
+    const qrImg     = document.getElementById('qr-img');
+    const qrError   = document.getElementById('qr-error');
+    const qrTimer   = document.getElementById('qr-timer');
+    const qrTimerFill = document.getElementById('qr-timer-fill');
+    const refreshBtn  = document.getElementById('refresh-btn');
     const instructions = document.getElementById('instructions');
-    const successBox  = document.getElementById('success-box');
-    const submitBtn   = document.getElementById('submit');
-    const numberInput = document.getElementById('number');
 
-    let currentCode = '';
-    let successTimer;
+    let expireTimeout;
 
     function showLoading() {
-      statusEl.innerHTML = `
-        <div class="loading">
-          <div class="spinner-wrap">
-            <svg viewBox="0 0 24 24">
-              <circle class="spin-track" cx="12" cy="12" r="9"/>
-              <circle class="spin-fill"  cx="12" cy="12" r="9"/>
-            </svg>
-          </div>
-          Requesting code…
-        </div>`;
-      copyHint.style.display = 'none';
+      qrLoading.style.display = 'flex';
+      qrFrame.style.display   = 'none';
+      qrError.style.display   = 'none';
+      qrTimer.style.display   = 'none';
+      refreshBtn.style.display = 'none';
       instructions.style.display = 'none';
-      successBox.style.display = 'none';
     }
 
-    function showError(msg) {
-      statusEl.innerHTML = `<span class="error-msg">${msg}</span>`;
-      copyHint.style.display = 'none';
-    }
-
-    function showCode(code) {
-      currentCode = code;
-      const fmt = code.length === 8 ? code.slice(0, 4) + '-' + code.slice(4) : code;
-      statusEl.innerHTML = `<div class="code-display" id="code-el" onclick="copyCode()">${fmt}</div>`;
-      copyHint.style.display = 'block';
+    function showQR(src) {
+      qrLoading.style.display  = 'none';
+      qrError.style.display    = 'none';
+      qrFrame.style.display    = 'inline-flex';
+      qrTimer.style.display    = 'block';
+      refreshBtn.style.display = 'inline-flex';
       instructions.style.display = 'block';
-      successBox.style.display = 'none';
 
-      // Show the success note after a short delay (the WhatsApp message typically arrives within a few seconds)
-      clearTimeout(successTimer);
-      successTimer = setTimeout(() => {
-        successBox.style.display = 'block';
-      }, 4000);
+      // Reset timer animation
+      qrTimerFill.style.animation = 'none';
+      void qrTimerFill.offsetWidth;
+      qrTimerFill.style.animation = 'timerDrain 55s linear forwards';
+
+      // Auto-refresh after ~55s
+      clearTimeout(expireTimeout);
+      expireTimeout = setTimeout(() => loadQR(), 55000);
     }
 
-    function copyCode() {
-      navigator.clipboard.writeText(currentCode).then(() => {
-        statusEl.innerHTML = '<div class="copied-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!</div>';
-        copyHint.style.display = 'none';
-        setTimeout(() => showCode(currentCode), 1600);
-      }).catch(() => {
-        // fallback
-        const ta = document.createElement('textarea');
-        ta.value = currentCode;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        statusEl.innerHTML = '<div class="copied-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!</div>';
-        copyHint.style.display = 'none';
-        setTimeout(() => showCode(currentCode), 1600);
-      });
+    function showError() {
+      qrLoading.style.display  = 'none';
+      qrFrame.style.display    = 'none';
+      qrError.style.display    = 'flex';
+      qrTimer.style.display    = 'none';
+      refreshBtn.style.display = 'none';
+      instructions.style.display = 'none';
     }
 
-    submitBtn.addEventListener('click', async () => {
-      const raw = numberInput.value.replace(/[^0-9]/g, '');
-      if (!raw) return showError('Please enter your WhatsApp number.');
-      if (raw.length < 10) return showError('Number too short — include country code.');
-
-      submitBtn.disabled = true;
+    function loadQR() {
       showLoading();
+      clearTimeout(expireTimeout);
 
-      numberInput.type = 'text';
-      numberInput.value = '+' + raw;
+      const src = '/qr/generate?' + Date.now();
+      const img = new Image();
+      img.onload = () => {
+        qrImg.src = src;
+        showQR(src);
+      };
+      img.onerror = () => showError();
+      img.src = src;
+    }
 
-      try {
-        const res  = await fetch(`/code?number=${raw}`);
-        const data = await res.json();
-        if (data.code && data.code !== 'Service Currently Unavailable') {
-          showCode(data.code);
-        } else {
-          showError('Service unavailable — please try again.');
-          numberInput.type  = 'number';
-          numberInput.value = raw;
-        }
-      } catch {
-        showError('Connection error — please try again.');
-        numberInput.type  = 'number';
-        numberInput.value = raw;
-      } finally {
-        submitBtn.disabled = false;
-      }
-    });
-
-    // Allow pressing Enter in the input
-    numberInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') submitBtn.click();
-    });
+    loadQR();
   </script>
 
   <script>

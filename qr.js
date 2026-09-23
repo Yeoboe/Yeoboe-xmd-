@@ -1,4 +1,5 @@
 const { makeid } = require('./id');
+const { increment } = require('./counter');
 const QRCode = require('qrcode');
 const express = require('express');
 const fs = require('fs');
@@ -11,6 +12,7 @@ const {
     makeCacheableSignalKeyStore,
     fetchLatestBaileysVersion,
     DisconnectReason,
+    jidNormalizedUser,
 } = require("@whiskeysockets/baileys");
 
 let router = express.Router();
@@ -20,10 +22,10 @@ function removeFile(FilePath) {
     fs.rmSync(FilePath, { recursive: true, force: true });
 }
 
-router.get('/', async (req, res) => {
+router.get('/generate', async (req, res) => {
     const id = makeid();
 
-    async function JUNEX() {
+    async function DaveTech() {
         const { state, saveCreds } = await useMultiFileAuthState('./temp/' + id);
         try {
             const { version } = await fetchLatestBaileysVersion();
@@ -37,12 +39,14 @@ router.get('/', async (req, res) => {
                 },
                 printQRInTerminal: false,
                 logger,
-                browser: Browsers.ubuntu('Chrome'),
+                browser: Browsers.macOS('Safari'),
                 connectTimeoutMs: 60000,
                 keepAliveIntervalMs: 10000,
             });
 
             client.ev.on('creds.update', saveCreds);
+
+            let sessionSent = false;
 
             client.ev.on('connection.update', async (s) => {
                 const { connection, lastDisconnect, qr } = s;
@@ -52,18 +56,19 @@ router.get('/', async (req, res) => {
                 }
 
                 if (connection === 'open') {
+                    if (sessionSent) return;
+                    sessionSent = true;
                     try {
-                        await client.sendMessage(client.user.id, {
-                            text: '⚡ *Yeoboe xmd* ⚡\nGenerating your session, please wait a moment...'
+                        const jid = jidNormalizedUser(client.user.id);
+                        await delay(2000);
+                        let b64data = Buffer.from(JSON.stringify(state.creds)).toString('base64');
+                        let session = await client.sendMessage(jid, { 
+                            text: 'Yeoboe-xmd:~' + b64data 
                         });
-                        await delay(50000);
-                        let data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`);
-                        await delay(8000);
-                        let b64data = Buffer.from(data).toString('base64');
-                        let session = await client.sendMessage(client.user.id, { text: 'Yeoboe-xmd:~' + b64data });
-                        await client.sendMessage(client.user.id, {
-                            text: "```⚡ Yeoboe xmd  Ultra has been linked to your WhatsApp account!\n\nDo NOT share this session_id with anyone.\n\nCopy and paste it on the SESSION string during deploy — it will be used for authentication.\n\nFor any issues, reach us via:\nhttps://wa.me/message/YNDA2RFTE35LB1\n\nDon't forget to sleep 😴, for even the relentless must recharge ⚡.\n\nGoodluck 🎉 — Yeoboe xmd```"
+                        await client.sendMessage(jid, {
+                            text: "✅ Yeoboe-xmd x Session Linked Successfully!\n\nYour bot is now connected to WhatsApp. No one can access your account or messages using this session — it only allows your bot to operate.\n\nCopy the session ID above and paste it into the SESSION field when deploying your bot.\n\nSupport: https://wa.me/message/255742579250\n\n— Yeoboe-xmd Tech"
                         }, { quoted: session });
+                        await increment();
                         await delay(500);
                         await client.ws.close();
                         removeFile('./temp/' + id);
@@ -71,10 +76,11 @@ router.get('/', async (req, res) => {
                         console.log('Error sending session messages:', e);
                     }
                 } else if (connection === 'close') {
+                    if (sessionSent) return;
                     const code = lastDisconnect?.error?.output?.statusCode;
                     if (code !== DisconnectReason.loggedOut) {
                         await delay(5000);
-                        JUNEX();
+                        DaveTech();
                     }
                 }
             });
@@ -88,7 +94,7 @@ router.get('/', async (req, res) => {
         }
     }
 
-    return await JUNEX();
+    return await DaveTech();
 });
 
 module.exports = router;
